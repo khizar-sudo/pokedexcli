@@ -18,6 +18,7 @@ type cliCommand struct {
 }
 
 var commands map[string]cliCommand
+var mapConfig config
 
 func init() {
 	commands = map[string]cliCommand{
@@ -31,6 +32,16 @@ func init() {
 			description: "Exit the Pokedex",
 			callback:    commandExit,
 		},
+		"map": {
+			name:        "map",
+			description: "Show the next 20 location areas in the Pokemon world",
+			callback:    commandMap,
+		},
+	}
+
+	mapConfig = config{
+		nextURL:     "https://pokeapi.co/api/v2/location-area",
+		previousURL: "",
 	}
 }
 
@@ -46,32 +57,17 @@ func main() {
 		cleaned := cleanInput(input)
 
 		if len(cleaned) == 0 {
-			fmt.Println("Unknown command")
-		} else if value, ok := commands[cleaned[0]]; !ok {
+			continue
+		}
+
+		if value, ok := commands[cleaned[0]]; !ok {
 			fmt.Printf("Unknown command: %s\n", cleaned[0])
 		} else {
-			err := value.callback(&config{})
+			err := value.callback(&mapConfig)
 			if err != nil {
 				fmt.Println(err)
 			}
 		}
 
 	}
-}
-
-func commandExit(*config) error {
-	fmt.Println("Closing the Pokedex... Goodbye!")
-	os.Exit(0)
-	return nil
-}
-
-func commandHelp(*config) error {
-	fmt.Println("Welcome to the Pokedex!")
-	fmt.Println("Usage:")
-	fmt.Println()
-	for _, cmd := range commands {
-		fmt.Printf("%s: %s\n", cmd.name, cmd.description)
-	}
-	fmt.Println()
-	return nil
 }
