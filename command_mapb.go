@@ -6,8 +6,13 @@ import (
 	"net/http"
 )
 
-func commandMap(configuration *config) error {
-	res, err := http.Get(configuration.nextURL)
+func commandMapb(configuration *config) error {
+	if configuration.previousURL == "" {
+		fmt.Println("You're on the first page of locations")
+		return nil
+	}
+
+	res, err := http.Get(configuration.previousURL)
 	if err != nil {
 		return err
 	}

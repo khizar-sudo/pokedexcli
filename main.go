@@ -6,17 +6,6 @@ import (
 	"os"
 )
 
-type config struct {
-	nextURL     string
-	previousURL string
-}
-
-type cliCommand struct {
-	name        string
-	description string
-	callback    func(configuration *config) error
-}
-
 var commands map[string]cliCommand
 var mapConfig config
 
@@ -36,6 +25,11 @@ func init() {
 			name:        "map",
 			description: "Show the next 20 location areas in the Pokemon world",
 			callback:    commandMap,
+		},
+		"mapb": {
+			name:        "mapb",
+			description: "Show the previous 20 location areas in the Pokemon world",
+			callback:    commandMapb,
 		},
 	}
 
