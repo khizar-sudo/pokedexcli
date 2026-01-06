@@ -9,7 +9,7 @@ func cleanInput(text string) []string {
 		return result
 	}
 	for _, word := range strings.Fields(text) {
-		result = append(result, word)
+		result = append(result, strings.ToLower(word))
 	}
 	return result
 }
