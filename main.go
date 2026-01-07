@@ -4,60 +4,38 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"time"
+
+	"github.com/khizar-sudo/pokedexcli/internal/commands"
+	"github.com/khizar-sudo/pokedexcli/internal/pokeapi"
+	"github.com/khizar-sudo/pokedexcli/internal/pokecache"
+	"github.com/khizar-sudo/pokedexcli/internal/utils"
 )
-
-var commands map[string]cliCommand
-var mapConfig config
-
-func init() {
-	commands = map[string]cliCommand{
-		"help": {
-			name:        "help",
-			description: "Displays a help message",
-			callback:    commandHelp,
-		},
-		"exit": {
-			name:        "exit",
-			description: "Exit the Pokedex",
-			callback:    commandExit,
-		},
-		"map": {
-			name:        "map",
-			description: "Show the next 20 location areas in the Pokemon world",
-			callback:    commandMap,
-		},
-		"mapb": {
-			name:        "mapb",
-			description: "Show the previous 20 location areas in the Pokemon world",
-			callback:    commandMapb,
-		},
-	}
-
-	mapConfig = config{
-		nextURL:     "https://pokeapi.co/api/v2/location-area",
-		previousURL: "",
-	}
-}
 
 func main() {
 	scanner := bufio.NewScanner(os.Stdin)
+	cmd := commands.GetCommands()
+	cache := pokecache.NewCache(60 * 60 * time.Second)
+	mapConfig := commands.Config{
+		NextURL:     pokeapi.LocationsURL,
+		PreviousURL: "",
+	}
 
 	for {
 		fmt.Printf("Pokedex > ")
-
 		scanner.Scan()
 
 		input := scanner.Text()
-		cleaned := cleanInput(input)
+		cleaned := utils.CleanInput(input)
 
 		if len(cleaned) == 0 {
 			continue
 		}
 
-		if value, ok := commands[cleaned[0]]; !ok {
+		if value, ok := cmd[cleaned[0]]; !ok {
 			fmt.Printf("Unknown command: %s\n", cleaned[0])
 		} else {
-			err := value.callback(&mapConfig)
+			err := value.Callback(&mapConfig, cache)
 			if err != nil {
 				fmt.Println(err)
 			}
