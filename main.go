@@ -35,7 +35,7 @@ func main() {
 		if value, ok := cmd[cleaned[0]]; !ok {
 			fmt.Printf("Unknown command: %s\n", cleaned[0])
 		} else {
-			err := value.Callback(&mapConfig, cache)
+			err := value.Callback(&mapConfig, cache, cleaned[1:]...)
 			if err != nil {
 				fmt.Println(err)
 			}
