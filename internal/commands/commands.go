@@ -36,8 +36,8 @@ func GetCommands() map[string]cliCommand {
 			Callback:    commandMapb,
 		},
 		"explore": {
-			Name:        "explore",
-			Description: "Explore the area",
+			Name:        "explore <location_name>",
+			Description: "Explore the location",
 			Callback:    commandExplore,
 		},
 	}
