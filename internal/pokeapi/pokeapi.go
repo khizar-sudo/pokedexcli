@@ -9,6 +9,7 @@ import (
 const BaseURL = "https://pokeapi.co/api/v2"
 const LocationsURL = BaseURL + "/location-area?offset=0&limit=20"
 const LoacationPokemonURL = BaseURL + "/location-area/"
+const PokemonURL = "https://pokeapi.co/api/v2/pokemon/"
 
 type LocationAreaResponse struct {
 	Count    int    `json:"count"`
@@ -18,6 +19,24 @@ type LocationAreaResponse struct {
 		Name string `json:"name"`
 		URL  string `json:"url"`
 	} `json:"results"`
+}
+
+type Pokemon struct {
+	Name           string `json:"name"`
+	Height         int    `json:"height"`
+	Weight         int    `json:"weight"`
+	BaseExperience int    `json:"base_experience"`
+	Stats          []struct {
+		BaseStat int `json:"base_stat"`
+		Stat     struct {
+			Name string `json:"name"`
+		} `json:"stat"`
+	} `json:"stats"`
+	Types []struct {
+		Type struct {
+			Name string `json:"name"`
+		} `json:"type"`
+	} `json:"types"`
 }
 
 func GetLocationAreas(url string) (LocationAreaResponse, error) {
@@ -67,6 +86,23 @@ func GetLocationAreaPokemon(url string) ([]string, error) {
 				result = append(result, name)
 			}
 		}
+	}
+
+	return result, nil
+}
+
+func GetPokemon(url string) (Pokemon, error) {
+	res, err := http.Get(url)
+	if err != nil {
+		return Pokemon{}, err
+	}
+	defer res.Body.Close()
+
+	var result Pokemon
+	decoder := json.NewDecoder(res.Body)
+	err = decoder.Decode(&result)
+	if err != nil {
+		return Pokemon{}, err
 	}
 
 	return result, nil

@@ -9,13 +9,18 @@ import (
 	"github.com/khizar-sudo/pokedexcli/internal/commands"
 	"github.com/khizar-sudo/pokedexcli/internal/pokeapi"
 	"github.com/khizar-sudo/pokedexcli/internal/pokecache"
+	"github.com/khizar-sudo/pokedexcli/internal/pokedex"
 	"github.com/khizar-sudo/pokedexcli/internal/utils"
 )
 
 func main() {
 	scanner := bufio.NewScanner(os.Stdin)
+
 	cmd := commands.GetCommands()
+
+	pokedex := pokedex.NewPokedex()
 	cache := pokecache.NewCache(60 * 60 * time.Second)
+
 	mapConfig := commands.Config{
 		NextURL:     pokeapi.LocationsURL,
 		PreviousURL: "",
@@ -35,7 +40,7 @@ func main() {
 		if value, ok := cmd[cleaned[0]]; !ok {
 			fmt.Printf("Unknown command: %s\n", cleaned[0])
 		} else {
-			err := value.Callback(&mapConfig, cache, cleaned[1:]...)
+			err := value.Callback(&mapConfig, cache, &pokedex, cleaned[1:]...)
 			if err != nil {
 				fmt.Println(err)
 			}

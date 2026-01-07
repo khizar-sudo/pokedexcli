@@ -4,9 +4,10 @@ import (
 	"fmt"
 
 	"github.com/khizar-sudo/pokedexcli/internal/pokecache"
+	"github.com/khizar-sudo/pokedexcli/internal/pokedex"
 )
 
-func commandHelp(*Config, *pokecache.Cache, ...string) error {
+func commandHelp(*Config, *pokecache.Cache, *pokedex.Pokedex, ...string) error {
 	fmt.Println("Welcome to the Pokedex!")
 	fmt.Println("Usage:")
 	fmt.Println()

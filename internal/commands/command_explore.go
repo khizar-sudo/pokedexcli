@@ -7,9 +7,10 @@ import (
 
 	"github.com/khizar-sudo/pokedexcli/internal/pokeapi"
 	"github.com/khizar-sudo/pokedexcli/internal/pokecache"
+	"github.com/khizar-sudo/pokedexcli/internal/pokedex"
 )
 
-func commandExplore(configuration *Config, cache *pokecache.Cache, args ...string) error {
+func commandExplore(configuration *Config, cache *pokecache.Cache, pokedex *pokedex.Pokedex, args ...string) error {
 	if len(args) == 0 {
 		return errors.New("Insufficient arguments")
 	}

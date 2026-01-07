@@ -1,6 +1,9 @@
 package commands
 
-import "github.com/khizar-sudo/pokedexcli/internal/pokecache"
+import (
+	"github.com/khizar-sudo/pokedexcli/internal/pokecache"
+	"github.com/khizar-sudo/pokedexcli/internal/pokedex"
+)
 
 type Config struct {
 	NextURL     string
@@ -10,7 +13,7 @@ type Config struct {
 type cliCommand struct {
 	Name        string
 	Description string
-	Callback    func(configuration *Config, cache *pokecache.Cache, args ...string) error
+	Callback    func(configuration *Config, cache *pokecache.Cache, pokedex *pokedex.Pokedex, args ...string) error
 }
 
 func GetCommands() map[string]cliCommand {
@@ -39,6 +42,11 @@ func GetCommands() map[string]cliCommand {
 			Name:        "explore <location_name>",
 			Description: "Explore the location",
 			Callback:    commandExplore,
+		},
+		"catch": {
+			Name:        "catch <pokemon_name>",
+			Description: "Try to catch a Pokemon",
+			Callback:    commandCatch,
 		},
 	}
 }

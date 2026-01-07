@@ -6,14 +6,15 @@ import (
 
 	"github.com/khizar-sudo/pokedexcli/internal/pokeapi"
 	"github.com/khizar-sudo/pokedexcli/internal/pokecache"
+	"github.com/khizar-sudo/pokedexcli/internal/pokedex"
 )
 
-func commandMap(configuration *Config, cache *pokecache.Cache, args ...string) error {
+func commandMap(configuration *Config, cache *pokecache.Cache, p *pokedex.Pokedex, args ...string) error {
 	urlToFetch := configuration.NextURL
 	return fetchAndDisplayLocations(urlToFetch, configuration, cache)
 }
 
-func commandMapb(configuration *Config, cache *pokecache.Cache, args ...string) error {
+func commandMapb(configuration *Config, cache *pokecache.Cache, p *pokedex.Pokedex, args ...string) error {
 	urlToFetch := configuration.PreviousURL
 	if urlToFetch == "" {
 		fmt.Println("You're on the first page")
