@@ -8,7 +8,7 @@ import (
 const BaseURL = "https://pokeapi.co/api/v2"
 const LocationsURL = BaseURL + "/location-area?offset=0&limit=20"
 
-type locationAreaResponse struct {
+type LocationAreaResponse struct {
 	Count    int    `json:"count"`
 	Next     string `json:"next"`
 	Previous string `json:"previous"`
@@ -18,18 +18,18 @@ type locationAreaResponse struct {
 	} `json:"results"`
 }
 
-func GetLocationAreas(url string) (locationAreaResponse, error) {
+func GetLocationAreas(url string) (LocationAreaResponse, error) {
 	res, err := http.Get(url)
 	if err != nil {
-		return locationAreaResponse{}, err
+		return LocationAreaResponse{}, err
 	}
 	defer res.Body.Close()
 
-	var result locationAreaResponse
+	var result LocationAreaResponse
 	decoder := json.NewDecoder(res.Body)
 	err = decoder.Decode(&result)
 	if err != nil {
-		return locationAreaResponse{}, err
+		return LocationAreaResponse{}, err
 	}
 
 	return result, nil

@@ -1,8 +1,8 @@
 package commands
 
 import (
+	"encoding/json"
 	"fmt"
-	"strings"
 
 	"github.com/khizar-sudo/pokedexcli/internal/pokeapi"
 	"github.com/khizar-sudo/pokedexcli/internal/pokecache"
@@ -10,8 +10,28 @@ import (
 
 func commandMap(configuration *Config, cache *pokecache.Cache) error {
 	urlToFetch := configuration.NextURL
+	return fetchAndDisplayLocations(urlToFetch, configuration, cache)
+}
+
+func commandMapb(configuration *Config, cache *pokecache.Cache) error {
+	urlToFetch := configuration.PreviousURL
+	if urlToFetch == "" {
+		fmt.Println("You're on the first page")
+		configuration.NextURL = pokeapi.LocationsURL
+		return nil
+	}
+	return fetchAndDisplayLocations(urlToFetch, configuration, cache)
+}
+
+func fetchAndDisplayLocations(urlToFetch string, configuration *Config, cache *pokecache.Cache) error {
 	if val, ok := cache.Get(urlToFetch); ok {
-		fmt.Print(string(val))
+		var result pokeapi.LocationAreaResponse
+		if err := json.Unmarshal(val, &result); err != nil {
+			return err
+		}
+		printLocations(result.Results)
+		configuration.NextURL = result.Next
+		configuration.PreviousURL = result.Previous
 		return nil
 	}
 
@@ -20,14 +40,13 @@ func commandMap(configuration *Config, cache *pokecache.Cache) error {
 		return err
 	}
 
-	var builder strings.Builder
-	for _, location := range result.Results {
-		builder.WriteString(location.Name)
-		builder.WriteString("\n")
-	}
+	printLocations(result.Results)
 
-	cache.Add(urlToFetch, []byte(builder.String()))
-	fmt.Print(builder.String())
+	jsonBytes, err := json.Marshal(result)
+	if err != nil {
+		return err
+	}
+	cache.Add(urlToFetch, jsonBytes)
 
 	configuration.NextURL = result.Next
 	configuration.PreviousURL = result.Previous
@@ -35,34 +54,11 @@ func commandMap(configuration *Config, cache *pokecache.Cache) error {
 	return nil
 }
 
-func commandMapb(configuration *Config, cache *pokecache.Cache) error {
-	urlToFetch := configuration.PreviousURL
-	if urlToFetch == "" {
-		fmt.Println("You're on the first page")
-		return nil
+func printLocations(locations []struct {
+	Name string `json:"name"`
+	URL  string `json:"url"`
+}) {
+	for _, location := range locations {
+		fmt.Println(location.Name)
 	}
-
-	if val, ok := cache.Get(urlToFetch); ok {
-		fmt.Print(string(val))
-		return nil
-	}
-
-	result, err := pokeapi.GetLocationAreas(urlToFetch)
-	if err != nil {
-		return err
-	}
-
-	var builder strings.Builder
-	for _, location := range result.Results {
-		builder.WriteString(location.Name)
-		builder.WriteString("\n")
-	}
-
-	cache.Add(urlToFetch, []byte(builder.String()))
-	fmt.Print(builder.String())
-
-	configuration.NextURL = result.Next
-	configuration.PreviousURL = result.Previous
-
-	return nil
 }
